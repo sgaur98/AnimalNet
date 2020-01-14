@@ -38,17 +38,13 @@ class NeuralNet(torch.nn.Module):
         """
         super(NeuralNet, self).__init__()
         self.input_size = in_size
-        #print(in_size)
-        #self.hidden_size = 32
         self.hidden1_size  = 64
         self.hidden2_size = 32
         self.out_size = out_size
 
-        #self.hidden = torch.nn.Linear(self.input_size, self.hidden_size)
         self.hidden1 = torch.nn.Linear(self.input_size, self.hidden1_size)
         self.hidden2 = torch.nn.Linear(self.hidden1_size, self.hidden2_size)
         self.output = torch.nn.Linear(self.hidden2_size, out_size)
-        #self.output = torch.nn.Linear(self.hidden_size, self.out_size)
         self.sigmoid = torch.nn.Sigmoid()
         self.relu = torch.nn.ReLU()
         self.loss_fn = loss_fn
@@ -75,15 +71,11 @@ class NeuralNet(torch.nn.Module):
         @return y: an (N, out_size) torch tensor of output from the network
         """
         x = self.hidden1(x)
-        #x = self.sigmoid(x)
         x = self.relu(x)
         x = self.hidden2(x)
-        #x = self.sigmoid(x)
         x = self.relu(x)
 
         x = self.output(x)
-        #x = self.sigmoid(x)
-        #x = self.relu(x)
 
         return x
 
@@ -95,14 +87,9 @@ class NeuralNet(torch.nn.Module):
         @return L: total empirical risk (mean of losses) at this time step as a float
         """
 
-        #self.train()
         self.optimizer.zero_grad()
 
         yhat = self(x)
-        #_, label = torch.max(yhat.data, 1)
-        # print(y)
-        # print(yhat)
-        # print(label)
         loss = self.loss_fn(yhat, y)
         loss.backward()
         self.optimizer.step()
@@ -134,7 +121,6 @@ def fit(train_set,train_labels,dev_set,n_iter,batch_size=100):
 
     (N, in_size) = tuple(train_set.size())
     learn_rate = 0.000095
-    #learn_rate = 0.0001
     out_size = 2
     n_iter = 25
 
@@ -149,27 +135,18 @@ def fit(train_set,train_labels,dev_set,n_iter,batch_size=100):
     train_data = TensorDataset(train_set, train_labels)
     train_loader = DataLoader(dataset=train_data, batch_size=batch_size, shuffle=True, num_workers=2)
 
-    #dev_data = TensorDataset(dev_set)
-    #dev_loader = DataLoader(dataset=dev_data, batch_size=batch_size, shuffle=False, num_workers=2)
-
     for epoch in range(0, n_iter):
         batch_losses = []
         for x_batch, y_batch in train_loader:
             loss = net.step(x_batch, y_batch)
             batch_losses.append(loss)
         training_loss = np.mean(batch_losses)
-        #print("Epoch %d: %f" % (epoch, training_loss))
         training_losses.append(training_loss)
 
-    print(training_losses)
-
     with torch.no_grad():
-        #print(dev_set)
-        #print(tuple(data.size()))
         net.eval()
         outputs = net(dev_set)
         _, predicted = torch.max(outputs.data, 1)
-        #print(predicted)
         dev_labels = predicted
 
 
