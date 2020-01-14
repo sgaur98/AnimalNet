@@ -1,6 +1,9 @@
 # AnimalNet
 
-A deep neural net that classifies images from a dataset as animals or not.
+A deep neural net that classifies images from a dataset as animals or not. See ```neuralnet.py ``` for neural net code.
+##### Neural net features:
+  - Uses PyTorch's Adam optimizer to adapt the learning rate
+  - Two hidden layers, with ReLU as the activation function between each one
 
 ## Getting Started
 ```
